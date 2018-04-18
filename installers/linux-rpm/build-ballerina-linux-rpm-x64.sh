@@ -1,6 +1,6 @@
 #!/bin/bash
 
-function pringUsage() {
+function pring_usage() {
     echo "Usage:"
     echo "build.sh [options]"
     echo "options:"
@@ -50,18 +50,18 @@ done
 
 if [ -z "$BALLERINA_VERSION" ]; then
     echo "Please enter the version of the ballerina pack"
-    pringUsage
+    pring_usage
     exit 1
 fi
 
 if [ -z "$DISTRIBUTION" ] && [ "$BUILD_ALL_DISTRIBUTIONS" == "false" ]; then
     echo "You have to use either --all or -d [distribution]"
-    pringUsage
+    pring_usage
     exit 1
 fi
 
 
-BALLERINA_DISTRIBUTION_LOCATION=/home/ubuntu/Packs
+BALLERINA_DISTRIBUTION_LOCATION=/home/centos/packs
 BALLERINA_PLATFORM=ballerina-platform-linux-$BALLERINA_VERSION
 BALLERINA_RUNTIME=ballerina-runtime-linux-$BALLERINA_VERSION
 BALLERINA_INSTALL_DIRECTORY=ballerina-$BALLERINA_VERSION
