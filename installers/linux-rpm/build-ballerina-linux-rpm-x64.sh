@@ -69,15 +69,14 @@ BALLERINA_DISTRIBUTION_LOCATION=${DIST_PATH}
 BALLERINA_PLATFORM=ballerina-platform-linux-${BALLERINA_VERSION}
 BALLERINA_RUNTIME=ballerina-runtime-linux-${BALLERINA_VERSION}
 BALLERINA_INSTALL_DIRECTORY=ballerina-${BALLERINA_VERSION}
-PLATFORM_SPEC_FILE="rpmbuild/SPECS/ballerina_platform.spec"
-RUNTIME_SPEC_FILE="rpmbuild/SPECS/ballerina_runtime.spec"
+RUNTIME_SPEC_FILE="ballerina_runtime.spec"
+PLATFORM_SPEC_FILE="ballerina_platform.spec"
+SPEC_FILES_LOCATION="rpmbuild/SPECS/"
+PLATFORM_SPEC_FILE_LOC=${SPEC_FILES_LOCATION}/${PLATFORM_SPEC_FILE}
+RUNTIME_SPEC_FILE_LOC=${SPEC_FILES_LOCATION}/${RUNTIME_SPEC_FILE}
 RPM_BALLERINA_VERSION=$(echo "${BALLERINA_VERSION//-/.}")
 
 echo "Build started at" $(date +"%Y-%m-%d %H:%M:%S")
-
-
-
-
 
 function extractPack() {
     echo "Extracting the ballerina distribution, " $1
@@ -95,11 +94,11 @@ function extractPack() {
 # Returns:
 #   None
 function setupVersion_runtime() {
-    sed -i "/Version:/c\Version:        ${RPM_BALLERINA_VERSION}" ${RUNTIME_SPEC_FILE}
-    sed -i "/%define _ballerina_version/c\%define _ballerina_version ${BALLERINA_VERSION}" ${RUNTIME_SPEC_FILE}
-    sed -i "/%define _ballerina_tools_dir/c\%define _ballerina_tools_dir ${BALLERINA_RUNTIME}" ${RUNTIME_SPEC_FILE}
-    sed -i "s/export BALLERINA_HOME=/export BALLERINA_HOME=\/opt\/Ballerina\/ballerina-runtime-${BALLERINA_VERSION}/" ${RUNTIME_SPEC_FILE}
-    sed -i "s?SED_BALLERINA_HOME?/opt/Ballerina/ballerina-runtime-${BALLERINA_VERSION}?" ${RUNTIME_SPEC_FILE}
+    sed -i "/Version:/c\Version:        ${RPM_BALLERINA_VERSION}" ${RUNTIME_SPEC_FILE_LOC}
+    sed -i "/%define _ballerina_version/c\%define _ballerina_version ${BALLERINA_VERSION}" ${RUNTIME_SPEC_FILE_LOC}
+    sed -i "/%define _ballerina_tools_dir/c\%define _ballerina_tools_dir ${BALLERINA_RUNTIME}" ${RUNTIME_SPEC_FILE_LOC}
+    sed -i "s/export BALLERINA_HOME=/export BALLERINA_HOME=\/opt\/Ballerina\/ballerina-runtime-${BALLERINA_VERSION}/" ${RUNTIME_SPEC_FILE_LOC}
+    sed -i "s?SED_BALLERINA_HOME?/opt/Ballerina/ballerina-runtime-${BALLERINA_VERSION}?" ${RUNTIME_SPEC_FILE_LOC}
 }
 
 # Set variables in SPEC file
@@ -111,11 +110,11 @@ function setupVersion_runtime() {
 # Returns:
 #   None
 function setupVersion_platform() {
-    sed -i "/Version:/c\Version:        ${RPM_BALLERINA_VERSION}" ${PLATFORM_SPEC_FILE}
-    sed -i "/%define _ballerina_version/c\%define _ballerina_version ${BALLERINA_VERSION}" ${PLATFORM_SPEC_FILE}
-    sed -i "/%define _ballerina_tools_dir/c\%define _ballerina_tools_dir ${BALLERINA_PLATFORM}" ${PLATFORM_SPEC_FILE}
-    sed -i "s/export BALLERINA_HOME=/export BALLERINA_HOME=\/opt\/Ballerina\/ballerina-platform-${BALLERINA_VERSION}/" ${PLATFORM_SPEC_FILE}
-    sed -i "s?SED_BALLERINA_HOME?/opt/Ballerina/ballerina-platform-${BALLERINA_VERSION}?" ${PLATFORM_SPEC_FILE}
+    sed -i "/Version:/c\Version:        ${RPM_BALLERINA_VERSION}" ${PLATFORM_SPEC_FILE_LOC}
+    sed -i "/%define _ballerina_version/c\%define _ballerina_version ${BALLERINA_VERSION}" ${PLATFORM_SPEC_FILE_LOC}
+    sed -i "/%define _ballerina_tools_dir/c\%define _ballerina_tools_dir ${BALLERINA_PLATFORM}" ${PLATFORM_SPEC_FILE_LOC}
+    sed -i "s/export BALLERINA_HOME=/export BALLERINA_HOME=\/opt\/Ballerina\/ballerina-platform-${BALLERINA_VERSION}/" ${PLATFORM_SPEC_FILE_LOC}
+    sed -i "s?SED_BALLERINA_HOME?/opt/Ballerina/ballerina-platform-${BALLERINA_VERSION}?" ${PLATFORM_SPEC_FILE_LOC}
 }
 
 # Create Ballerina Platform RPM
@@ -129,8 +128,10 @@ function setupVersion_platform() {
 function createBallerinaPlatform() {
     echo "Creating ballerina platform installer"
     extractPack "$BALLERINA_DISTRIBUTION_LOCATION/$BALLERINA_PLATFORM.zip"
+    [ -f ${PLATFORM_SPEC_FILE_LOC} ] && rm -f ${PLATFORM_SPEC_FILE_LOC}
+    cp resources/${PLATFORM_SPEC_FILE} ${SPEC_FILES_LOCATION}
     setupVersion_platform
-    rpmbuild -bb --define "_topdir  $(pwd)/rpmbuild" ${PLATFORM_SPEC_FILE}
+    rpmbuild -bb --define "_topdir  $(pwd)/rpmbuild" ${PLATFORM_SPEC_FILE_LOC}
 
 }
 
@@ -145,8 +146,10 @@ function createBallerinaPlatform() {
 function createBallerinaRuntime() {
     echo "Creating ballerina runtime installer"
     extractPack "$BALLERINA_DISTRIBUTION_LOCATION/$BALLERINA_RUNTIME.zip"
+    [ -f ${RUNTIME_SPEC_FILE_LOC} ] && rm -f ${RUNTIME_SPEC_FILE_LOC}
+    cp resources/${RUNTIME_SPEC_FILE} ${SPEC_FILES_LOCATION}
     setupVersion_runtime
-    rpmbuild -bb --define "_topdir  $(pwd)/rpmbuild" ${RUNTIME_SPEC_FILE}
+    rpmbuild -bb --define "_topdir  $(pwd)/rpmbuild" ${RUNTIME_SPEC_FILE_LOC}
 }
 
 
