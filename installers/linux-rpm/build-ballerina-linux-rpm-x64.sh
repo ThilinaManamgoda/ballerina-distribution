@@ -1,20 +1,20 @@
 #!/bin/bash
 
-function pring_usage() {
+function printUsage() {
     echo "Usage:"
-    echo "build.sh [options]"
+    echo "$0 [options]"
     echo "options:"
     echo "    -v (--version)"
-    echo "        version of the balletina distribution"
+    echo "        version of the ballerina distribution"
+    echo "    -p (--path)"
+    echo "        path of the ballerina distributions"
     echo "    -d (--dist)"
-    echo "        balletina distribution type either of the followings"
-    echo "        1. balletina-platform"
+    echo "        ballerina distribution type either of the followings"
+    echo "        If not specified both distributions will be built"
+    echo "        1. ballerina-platform"
     echo "        2. ballerina-runtime"
-    echo "    --all"
-    echo "        build all ballerina distributions"
-    echo "        this will OVERRIDE the -d option"
-    echo "eg: build.sh -v 1.0.0 -d ballerina"
-    echo "eg: build.sh -v 1.0.0 --all"
+    echo "eg: $0 -v 1.0.0 -p /home/username/Packs"
+    echo "eg: $0 -v 1.0.0 -p /home/username/Packs -d ballerina-platform"
 }
 
 BUILD_ALL_DISTRIBUTIONS=false
@@ -23,9 +23,14 @@ while [[ $# -gt 0 ]]
 do
 key="$1"
 
-case $key in
+case ${key} in
     -v|--version)
     BALLERINA_VERSION="$2"
+    shift # past argument
+    shift # past value
+    ;;
+    -p|--path)
+    DIST_PATH="$2"
     shift # past argument
     shift # past value
     ;;
@@ -41,39 +46,37 @@ case $key in
 esac
 done
 
-for i in "${POSITIONAL[@]}"
-do
-    if [ "$i" == "--all" ]; then
-        BUILD_ALL_DISTRIBUTIONS=true
-    fi
-done
-
 if [ -z "$BALLERINA_VERSION" ]; then
     echo "Please enter the version of the ballerina pack"
-    pring_usage
+    printUsage
     exit 1
 fi
 
-if [ -z "$DISTRIBUTION" ] && [ "$BUILD_ALL_DISTRIBUTIONS" == "false" ]; then
-    echo "You have to use either --all or -d [distribution]"
-    pring_usage
+if [ -z "$DIST_PATH" ]; then
+    echo "Please enter the path of the ballerina packs"
+    printUsage
     exit 1
 fi
 
+if [ -z "$DISTRIBUTION" ]; then
+    BUILD_ALL_DISTRIBUTIONS=true
+fi
 
-BALLERINA_DISTRIBUTION_LOCATION=/home/centos/packs
-BALLERINA_PLATFORM=ballerina-platform-linux-$BALLERINA_VERSION
-BALLERINA_RUNTIME=ballerina-runtime-linux-$BALLERINA_VERSION
-BALLERINA_INSTALL_DIRECTORY=ballerina-$BALLERINA_VERSION
-BALDIST=ballerina-linux-$BALLERINA_VERSION
+
+
+
+BALLERINA_DISTRIBUTION_LOCATION=${DIST_PATH}
+BALLERINA_PLATFORM=ballerina-platform-linux-${BALLERINA_VERSION}
+BALLERINA_RUNTIME=ballerina-runtime-linux-${BALLERINA_VERSION}
+BALLERINA_INSTALL_DIRECTORY=ballerina-${BALLERINA_VERSION}
 PLATFORM_SPEC_FILE="rpmbuild/SPECS/ballerina_platform.spec"
 RUNTIME_SPEC_FILE="rpmbuild/SPECS/ballerina_runtime.spec"
-RPM_BALLERINA_VERSION=""
+RPM_BALLERINA_VERSION=$(echo "${BALLERINA_VERSION//-/.}")
 
-echo $BALDIST "build started at" $(date +"%Y-%m-%d %H:%M:%S")
+echo "Build started at" $(date +"%Y-%m-%d %H:%M:%S")
 
 
-echo $BALDIST "build completed at" $(date +"%Y-%m-%d %H:%M:%S")
+
 
 
 function extractPack() {
@@ -83,20 +86,11 @@ function extractPack() {
     unzip $1 -d rpmbuild/SOURCES/ > /dev/null 2>&1
 }
 
-# Remove "-" from the version since RPM Spec file doesn't support this syntax
-# Globals:
-#   BALLERINA_VERSION
-# Arguments:
-# Returns:
-#   None
-function rpm_version() {
-    RPM_BALLERINA_VERSION=$(echo "${BALLERINA_VERSION//-/.}")
-}
-
 # Set variables in SPEC file
 # Globals:
 #   BALLERINA_VERSION
 #   RPM_BALLERINA_VERSION
+#   RUNTIME_SPEC_FILE
 # Arguments:
 # Returns:
 #   None
@@ -112,6 +106,7 @@ function setupVersion_runtime() {
 # Globals:
 #   BALLERINA_VERSION
 #   RPM_BALLERINA_VERSION
+#   PLATFORM_SPEC_FILE
 # Arguments:
 # Returns:
 #   None
@@ -123,6 +118,14 @@ function setupVersion_platform() {
     sed -i "s?SED_BALLERINA_HOME?/opt/Ballerina/ballerina-platform-${BALLERINA_VERSION}?" ${PLATFORM_SPEC_FILE}
 }
 
+# Create Ballerina Platform RPM
+# Globals:
+#   BALLERINA_DISTRIBUTION_LOCATION
+#   BALLERINA_PLATFORM
+#   PLATFORM_SPEC_FILE
+# Arguments:
+# Returns:
+#   None
 function createBallerinaPlatform() {
     echo "Creating ballerina platform installer"
     extractPack "$BALLERINA_DISTRIBUTION_LOCATION/$BALLERINA_PLATFORM.zip"
@@ -131,6 +134,14 @@ function createBallerinaPlatform() {
 
 }
 
+# Create Ballerina Runtime RPM
+# Globals:
+#   BALLERINA_DISTRIBUTION_LOCATION
+#   BALLERINA_PLATFORM
+#   RUNTIME_SPEC_FILE
+# Arguments:
+# Returns:
+#   None
 function createBallerinaRuntime() {
     echo "Creating ballerina runtime installer"
     extractPack "$BALLERINA_DISTRIBUTION_LOCATION/$BALLERINA_RUNTIME.zip"
@@ -139,7 +150,6 @@ function createBallerinaRuntime() {
 }
 
 
-rpm_version
 if [ "$BUILD_ALL_DISTRIBUTIONS" == "true" ]; then
     echo "Creating all distributions"
     createBallerinaPlatform
@@ -155,3 +165,5 @@ else
         echo "Error"
     fi
 fi
+
+echo "Build completed at" $(date +"%Y-%m-%d %H:%M:%S")
