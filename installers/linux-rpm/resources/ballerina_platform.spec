@@ -50,11 +50,13 @@ then
   rm -f /usr/bin/composer
 fi
 
+
+
 %clean
 rm -rf %{_topdir}/BUILD/*
 rm -rf %{buildroot}
 
 %files
-/opt/Ballerina/%{_ballerina_name}-platform-%{_ballerina_version}/*
+/opt/Ballerina/%{_ballerina_name}-platform-%{_ballerina_version}
 
 

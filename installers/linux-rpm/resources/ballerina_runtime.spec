@@ -45,4 +45,4 @@ rm -rf %{_topdir}/BUILD/*
 rm -rf %{buildroot}
 
 %files
-/opt/Ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}/*
+/opt/Ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}
