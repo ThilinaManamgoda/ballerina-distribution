@@ -10,7 +10,7 @@ License:        Apache license 2.0
 URL:            https://ballerinalang.org/
 
 AutoReqProv: no
-%define _rpmfilename %%{ARCH}/ballerina-platform-linux-installer-x64-%%{VERSION}.rpm
+%define _rpmfilename %%{ARCH}/ballerina-platform-linux-installer-x64-%{_ballerina_version}.rpm
 %define __jar_repack %{nil}
 
 %description
