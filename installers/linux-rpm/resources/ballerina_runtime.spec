@@ -28,7 +28,7 @@ cp -r %{_topdir}/SOURCES/%{_ballerina_tools_dir}/* %{_topdir}/BUILD/
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d %{buildroot}/usr/lib/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}
-cp -r cp -r bin bre logs resources samples src %{buildroot}/usr/lib/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}/
+cp -r bin bre lib src %{buildroot}/usr/lib/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}/
 
 %post
 ln -sf /usr/lib/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}/bin/ballerina /usr/bin/%{_ballerina_name}
