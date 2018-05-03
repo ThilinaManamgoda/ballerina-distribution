@@ -38,7 +38,6 @@ ln -sf /usr/lib/ballerina/%{_ballerina_name}-platform-%{_ballerina_version}/bin/
 ln -sf /usr/lib/ballerina/%{_ballerina_name}-platform-%{_ballerina_version}/bin/composer /usr/bin/composer
 echo 'export BALLERINA_HOME=' >> /etc/profile.d/wso2.sh
 chmod 0755 /etc/profile.d/wso2.sh
-echo "Ballerina Platform %{_ballerina_version} is successfully installed in /usr/lib/ballerina/%{_ballerina_name}-platform-%{_ballerina_version}"
 
 %postun
 sed -i.bak '\:SED_BALLERINA_HOME:d' /etc/profile.d/wso2.sh
@@ -52,7 +51,6 @@ if [ "$(readlink /usr/bin/composer)" = "/usr/lib/ballerina/ballerina-platform-%{
 then
   rm -f /usr/bin/composer
 fi
-echo "Ballerina Platform %{_ballerina_version} is successfully uninstalled"
 
 
 %clean
