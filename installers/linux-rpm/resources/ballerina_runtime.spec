@@ -9,8 +9,10 @@ Summary:        Ballerina is a general purpose, concurrent and strongly typed pr
 License:        Apache license 2.0
 URL:            https://ballerinalang.org/
 
+# Disable Automatic Dependencies
 AutoReqProv: no
 %define _rpmfilename %%{ARCH}/ballerina-runtime-linux-installer-x64-%{_ballerina_version}.rpm
+# Disable Jar repacking
 %define __jar_repack %{nil}
 
 %description
@@ -25,24 +27,27 @@ cp -r %{_topdir}/SOURCES/%{_ballerina_tools_dir}/* %{_topdir}/BUILD/
 %build
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d %{buildroot}/opt/Ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}
-cp -r * %{buildroot}/opt/Ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}/
+install -d %{buildroot}/usr/lib/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}
+cp -r cp -r bin bre logs resources samples src %{buildroot}/usr/lib/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}/
 
 %post
-ln -sf /opt/Ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}/bin/ballerina /usr/bin/%{_ballerina_name}
+ln -sf /usr/lib/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}/bin/ballerina /usr/bin/%{_ballerina_name}
 echo 'export BALLERINA_HOME=' >> /etc/profile.d/wso2.sh
 chmod 0755 /etc/profile.d/wso2.sh
+echo "Ballerina Runtime %{_ballerina_version} is successfully installed in /usr/lib/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}"
 
 %postun
 sed -i.bak '\:SED_BALLERINA_HOME:d' /etc/profile.d/wso2.sh
-if [ "$(readlink /usr/bin/ballerina)" = "/opt/Ballerina/ballerina-runtime-%{_ballerina_version}/bin/ballerina" ]
+if [ "$(readlink /usr/bin/ballerina)" = "/usr/lib/ballerina/ballerina-runtime-%{_ballerina_version}/bin/ballerina" ]
 then
   rm -f /usr/bin/ballerina
 fi
+echo "Ballerina Runtime %{_ballerina_version} is successfully uninstalled"
 
 %clean
 rm -rf %{_topdir}/BUILD/*
 rm -rf %{buildroot}
 
 %files
-/opt/Ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}
+/usr/lib/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}
+%doc COPYRIGHT LICENSE README
