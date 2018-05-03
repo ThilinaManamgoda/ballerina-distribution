@@ -97,7 +97,7 @@ function setupVersion_runtime() {
     sed -i "/Version:/c\Version:        ${RPM_BALLERINA_VERSION}" ${RUNTIME_SPEC_FILE_LOC}
     sed -i "/%define _ballerina_version/c\%define _ballerina_version ${BALLERINA_VERSION}" ${RUNTIME_SPEC_FILE_LOC}
     sed -i "/%define _ballerina_tools_dir/c\%define _ballerina_tools_dir ${BALLERINA_RUNTIME}" ${RUNTIME_SPEC_FILE_LOC}
-    sed -i "s/export BALLERINA_HOME=/export BALLERINA_HOME=\/use\/lib\/ballerina\/ballerina-runtime-${BALLERINA_VERSION}/" ${RUNTIME_SPEC_FILE_LOC}
+    sed -i "s/export BALLERINA_HOME=/export BALLERINA_HOME=\/usr\/lib\/ballerina\/ballerina-runtime-${BALLERINA_VERSION}/" ${RUNTIME_SPEC_FILE_LOC}
     sed -i "s?SED_BALLERINA_HOME?/usr/lib/ballerina/ballerina-runtime-${BALLERINA_VERSION}?" ${RUNTIME_SPEC_FILE_LOC}
 }
 
