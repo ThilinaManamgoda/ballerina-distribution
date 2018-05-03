@@ -7,7 +7,7 @@ Version:
 Release:        1
 Summary:        Ballerina is a general purpose, concurrent and strongly typed programming language with both textual and graphical syntaxes, optimized for integration.
 License:        Apache license 2.0
-URL:            https://ballerinalang.org/
+URL:            https://ballerina.io/
 
 # Disable Automatic Dependencies
 AutoReqProv: no
