@@ -11,6 +11,7 @@ URL:            https://ballerina.io/
 
 # Disable Automatic Dependencies
 AutoReqProv: no
+# Override RPM file name
 %define _rpmfilename %%{ARCH}/ballerina-platform-linux-installer-x64-%{_ballerina_version}.rpm
 # Disable Jar repacking
 %define __jar_repack %{nil}
@@ -21,7 +22,6 @@ Ballerina allows you to code with a statically-typed, interaction-centric progra
 %pre
 rm -f /usr/bin/ballerina > /dev/null 2>&1
 rm -f /usr/bin/composer > /dev/null 2>&1
-
 
 %prep
 rm -rf %{_topdir}/BUILD/*
@@ -51,7 +51,6 @@ if [ "$(readlink /usr/bin/composer)" = "%{_libdir}/ballerina/ballerina-platform-
 then
   rm -f /usr/bin/composer
 fi
-
 
 %clean
 rm -rf %{_topdir}/BUILD/*

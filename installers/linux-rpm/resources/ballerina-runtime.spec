@@ -11,6 +11,7 @@ URL:            https://ballerina.io/
 
 # Disable Automatic Dependencies
 AutoReqProv: no
+# Override RPM file name
 %define _rpmfilename %%{ARCH}/ballerina-runtime-linux-installer-x64-%{_ballerina_version}.rpm
 # Disable Jar repacking
 %define __jar_repack %{nil}
