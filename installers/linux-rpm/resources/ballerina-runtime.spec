@@ -27,17 +27,17 @@ cp -r %{_topdir}/SOURCES/%{_ballerina_tools_dir}/* %{_topdir}/BUILD/
 %build
 %install
 rm -rf $RPM_BUILD_ROOT
-install -d %{buildroot}/usr/lib/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}
-cp -r bin bre lib src %{buildroot}/usr/lib/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}/
+install -d %{buildroot}%{_libdir}/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}
+cp -r bin bre lib src %{buildroot}%{_libdir}/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}/
 
 %post
-ln -sf /usr/lib/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}/bin/ballerina /usr/bin/%{_ballerina_name}
+ln -sf %{_libdir}/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}/bin/ballerina /usr/bin/%{_ballerina_name}
 echo 'export BALLERINA_HOME=' >> /etc/profile.d/wso2.sh
 chmod 0755 /etc/profile.d/wso2.sh
 
 %postun
 sed -i.bak '\:SED_BALLERINA_HOME:d' /etc/profile.d/wso2.sh
-if [ "$(readlink /usr/bin/ballerina)" = "/usr/lib/ballerina/ballerina-runtime-%{_ballerina_version}/bin/ballerina" ]
+if [ "$(readlink /usr/bin/ballerina)" = "%{_libdir}/ballerina/ballerina-runtime-%{_ballerina_version}/bin/ballerina" ]
 then
   rm -f /usr/bin/ballerina
 fi
@@ -47,5 +47,5 @@ rm -rf %{_topdir}/BUILD/*
 rm -rf %{buildroot}
 
 %files
-/usr/lib/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}
+%{_libdir}/ballerina/%{_ballerina_name}-runtime-%{_ballerina_version}
 %doc COPYRIGHT LICENSE README
